@@ -2,8 +2,9 @@ flask
 flask_cors
 requests
 bs4
+bokeh
 pymongo
-urllib
 re
 shutil
 csv
+urllib

@@ -29,6 +29,23 @@
     background-color: #ccc;
     padding: 10px;    
 }
+
+.button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        /* Hover effect */
+        .button:hover 
+        {
+            background-color: #0056b3; 
+          
+          }
+
  </style>
 
 
@@ -58,7 +75,7 @@
       {% endfor %}
     </table>
 </div>
-<div>&#xf16a;<div>
+<div>&#xf16a;    <button class="button" onclick="redirectToJson()">Get JSON</button>  <div>
   <footer id="footer">Copyright ©   <br> >> <a href="https://www.linkedin.com/in/sufiyan-mohammad-04a114264"> https://www.linkedin.com/in/sufiyan-mohammad-04a114264 </a>  
     <br> >> <a href="https://github.com/Sufiyan999/"> https://github.com/Sufiyan999/ </a> 
     <br> >> <a href="https://github.com/Sufiyan999/YOUTUBE-IMAGE-SCRAPPER-PROJECT"> Source code </a> 
@@ -89,6 +106,10 @@
         // Page was refreshed, call the redirect function
         redirectToReview();
     }
+
+    function redirectToJson() {
+            window.location.href = "/json";
+        }
 </script>
 
 </body>

@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request,jsonify,send_file
 from flask_cors import CORS,cross_origin
 import requests
-from urllib.request import urlopen as uReq
 import logging
-import pymongo
 import os
-import shutil
 import re
 import csv
+import pandas as pd
+
+# from utils import  create_bokeh_plot 
+# from utils import figure, output_file, show
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -147,7 +148,7 @@ def show_thumbs():
 
 @app.route('/Video url',methods = ['POST' , 'GET'])
 @cross_origin()
-def show_urls():
+def show_videos():
     report_list = get_from_csv_file()[1:]
     video_urls = [] 
     if not bool(report_list):
@@ -157,16 +158,44 @@ def show_urls():
             video_urls.append(row[1].split("=")[-1])       
         except:            
            continue  
-#   binary_string = "b'Best Way To Start Class -9th English \xf0\x9f\x92\xa5 || Master Strategy Plan || Follow this \xe2\x9a\xa1\xe2\x9a\xa1'"
-# normal_string = binary_string.encode('utf-8').decode('unicode-escape')
-# print(normal_string)
 
     # return jsonify({"urls": video_urls})
     
     return render_template('videos.html', video_urls=video_urls)
+                   
+                    
+@app.route('/json',methods = ['POST' , 'GET'])
+@cross_origin()
+def JSON():
+    df  = pd.read_csv("scrapped_data.csv")
+    # df.drop(df.columns[0], inplace = True)
+    print(df.columns)
+    print(df.head())
+    
+    dic = {}
+    
+    for column in df.columns:
+        dic[column] = list(df[column])        
+    
+    # return jsonify(df.T.to_json())
+    return jsonify(dic)
+         
+  
+  
+# Route to render the Bokeh plot
+@app.route('/visualize')
+def visualize():
+    df  = pd.read_csv("scrapped_data.csv")
+    p = create_bokeh_plot(df)
+    output_file("static/bokeh_plot_with_hover_and_image.html")
+    show(p)
+    return render_template('bokeh.html', script=p)   
+                    
                     
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
+    
+    #"D:\Softwares\Anaconda\Scripts\activate.bat"
 
 
 
@@ -197,3 +226,4 @@ print(normal_string)
 # %%
 "https://www.youtube.com/watch?v=b8u0bZpiA4I".split("=")[-1]
 # %%
+"D:\Softwares\Anaconda\Scripts\activate.bat"

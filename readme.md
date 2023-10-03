@@ -21,7 +21,7 @@ This Python project allows you to search for a YouTube channel, scrape its lates
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/Sufiyan999/PW-DataScience-Masters/blob/master/Assignments/2.%20FEBRUARY/22_feb_assign/YOUTUBE-IMAGE-SCRAPPER-PROJECT
+   git clone https://github.com/Sufiyan999/YOUTUBE-IMAGE-SCRAPPER-PROJECT
    ```
 
 2. Navigate to the project directory:
