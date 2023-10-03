@@ -6,6 +6,7 @@ import logging
 import pymongo
 import os
 import shutil
+import numpy as np
 import re
 import csv
 
@@ -14,6 +15,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 logging.basicConfig(filename=os.path.join(BASE_DIR, "scrapper.log") , level=logging.INFO)
 
 app = Flask(__name__)
+query = None
 
 print("Youtube Scrap")
 
@@ -27,7 +29,8 @@ def homepage():
 def index():
     if request.method == 'POST':
         try:
-            # return show_urls()       
+            # return show_urls()  
+            global query     
             query = request.form['content'].replace(" ","")
             
             # fake user agent to avoid getting blocked by Google
@@ -56,6 +59,7 @@ def index():
             
             min_video_count = min(len(videoids) , len( thumbnails) , len(published_time) , len( titles) , len( views))
             print(min_video_count)
+            
             for i in range(min_video_count):
                 try:
                     temp = []
@@ -63,7 +67,7 @@ def index():
                     temp.append('https://www.youtube.com/watch?v=' + videoids[i].split('"')[-2])
                     temp.append(thumbnails[i].split('"')[-2])
                     temp.append(titles[i].split('"')[-2])
-                    temp.append(views[i].split('"')[-2])
+                    temp.append(views[i].split('"')[-2].split()[-2])
                     temp.append(published_time[i].split('"')[-2])
                     
                     report_list.append(temp)
@@ -72,7 +76,7 @@ def index():
                         print(e)
                         continue
                     
-            print(report_list)     
+            # print(report_list)     
             save_to_csv_file(report_list)
             return render_template('result.html', report_list=report_list, channel=query)
 
@@ -84,6 +88,14 @@ def index():
             logging.info(e)
             query = request.form['content']
             return f'something is wrong with {query}' +'\n\n' + f'{str(e)}' 
+        
+    if request.method == 'GET':
+        print('GET')
+        
+        report_list = get_from_csv_file()
+        print(len(report_list) , len(report_list[0]))
+        return render_template('result.html', report_list=report_list, channel=query)
+    
     else:
         return render_template('index.html')
 
