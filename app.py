@@ -6,7 +6,6 @@ import logging
 import pymongo
 import os
 import shutil
-import numpy as np
 import re
 import csv
 
@@ -149,20 +148,22 @@ def show_thumbs():
 @app.route('/Video url',methods = ['POST' , 'GET'])
 @cross_origin()
 def show_urls():
-    report_list = get_from_csv_file()
+    report_list = get_from_csv_file()[1:]
     video_urls = [] 
     if not bool(report_list):
         return "NO URLS WERE FOUND"
     for row in report_list:
         try: 
-            video_urls.append(row[1])       
+            video_urls.append(row[1].split("=")[-1])       
         except:            
            continue  
 #   binary_string = "b'Best Way To Start Class -9th English \xf0\x9f\x92\xa5 || Master Strategy Plan || Follow this \xe2\x9a\xa1\xe2\x9a\xa1'"
 # normal_string = binary_string.encode('utf-8').decode('unicode-escape')
 # print(normal_string)
 
-    return jsonify({"urls": video_urls})
+    # return jsonify({"urls": video_urls})
+    
+    return render_template('videos.html', video_urls=video_urls)
                     
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
@@ -193,4 +194,6 @@ print(binary_string.encode('utf-8'))
 normal_string = binary_string.encode('utf-8').decode('unicode')
 print(normal_string)
 
+# %%
+"https://www.youtube.com/watch?v=b8u0bZpiA4I".split("=")[-1]
 # %%
