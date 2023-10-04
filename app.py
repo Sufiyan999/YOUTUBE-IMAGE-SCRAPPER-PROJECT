@@ -31,7 +31,7 @@ def index():
             # return show_urls()  
             global query     
             query = request.form['content'].replace(" ","")
-            
+             
             # fake user agent to avoid getting blocked by Google
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"}
 
@@ -57,7 +57,7 @@ def index():
             ]
             
             min_video_count = min(len(videoids) , len( thumbnails) , len(published_time) , len( titles) , len( views))
-            print(min_video_count)
+            print("min fethed videoes : " , min_video_count)
             
             for i in range(min_video_count):
                 try:

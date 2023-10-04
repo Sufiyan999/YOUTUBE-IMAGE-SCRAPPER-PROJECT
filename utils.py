@@ -14,8 +14,11 @@ def save_to_csv_file(report_list):
             file_name = os.path.join(BASE_DIR,  'scrapped_data.csv')
             with open(file_name, 'w') as csvfile:
                 csvwriter = csv.writer(csvfile)
-                for row in report_list:
+                for i, row in enumerate(report_list):
                     try:
+                        if i > 0 : 
+                                row[3] = row[3].encode('utf-8')
+                                
                         csvwriter.writerow(row)
                     except:                                         # UnicodeEncodeError ,because of these 🔥🔥 in the title row[3]     
                         row[3] = row[3].encode('utf-8') 
@@ -55,6 +58,9 @@ def get_json_by_csv():
 
 # Convert views to numeric
 def views_to_numeric(views_str):
+    if isinstance(views_str, int) or isinstance(views_str, float):
+        return float(views_str)
+    
     views_str = views_str.replace(',', '')  # Remove commas if present
     if 'K' in views_str:
         views_str = views_str.replace('K', '')
@@ -68,18 +74,20 @@ def views_to_numeric(views_str):
     else:
         return float(views_str)   
 
-def create_bokeh_plot(df): 
+def create_bokeh_plot(df , hover_data = True): 
             data = {}
 
             for column in df.columns:
                 try:
-                    print(column)
+                    print(column , end = "--")
                     data[column] = df[column]
                 except:
                     continue
             
 
             df["Numeric Views"] = df["Views"].apply(views_to_numeric)
+            
+            
             sno = list(range(1, len(df) + 1))
 
             # Create a Bokeh ColumnDataSource to supply data to the plot
@@ -97,20 +105,23 @@ def create_bokeh_plot(df):
             p.line(x="index", y="Numeric Views", source=source, line_width=2, line_color="blue", legend_label="Line")
             circle = p.circle(x="index", y="Numeric Views", source=source, size=8, color="red", alpha=0.7, legend_label="Dots")
 
-            # Create a custom HTML div for the hover tooltip with an image
-            hover_html = """
-                <div style="color:blue;">
-                    <img src="@{Thumbnail}" style="max-height: 100px;">
-                    <a href="@{ Video url}" > </a>
-                    <p><strong style="color:red;" >Title:</strong> @{Title}</p>
-                    <p><strong style="color:red;">Published Time:</strong> @{Published Time}</p>
-                    <p><strong style="color:red;">Views:</strong> @{Views}</p>
-                </div>
-            """
 
-            # Add a HoverTool with a custom tooltip
-            hover = HoverTool(renderers=[circle], tooltips=hover_html)
-            p.add_tools(hover)
+
+            if hover_data:
+                        # Create a custom HTML div for the hover tooltip with an image
+                        hover_html = """
+                            <div style="color:blue;">
+                                <img src="@{Thumbnail}" style="max-height: 100px;">
+                                <a href="@{ Video url}" > </a>
+                                <p><strong style="color:red;" >Title:</strong> @{Title}</p>
+                                <p><strong style="color:red;">Published Time:</strong> @{Published Time}</p>
+                                <p><strong style="color:red;">Views:</strong> @{Views}</p>
+                            </div>
+                        """
+
+                        # Add a HoverTool with a custom tooltip
+                        hover = HoverTool(renderers=[circle], tooltips=hover_html)
+                        p.add_tools(hover)
 
             # Add a legend
             p.legend.title = "Legend"
@@ -123,8 +134,12 @@ def create_bokeh_plot(df):
  
 if __name__ == "__main__": 
         df = pd.read_csv("scrapped_data.csv")
-        df.head()            
-        p = create_bokeh_plot(df)           
+    
+        try:       
+                   p = create_bokeh_plot(df)  
+              
+        except:
+                   p = create_bokeh_plot(df , False)              
 
         output_file("static/bokeh_plot_with_hover_and_image.html")
         show(p)

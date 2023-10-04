@@ -1,6 +1,6 @@
 # YouTube Channel Scraper
 
-This Python project allows you to search for a YouTube channel, scrape its latest updated videos' information, and display the data in a tabular format on the screen. Additionally, you can download the scraped data in CSV file format.
+This Python project allows you to search for a YouTube channel, scrape its latest updated videos' information, and display the data in a tabular format on the screen. Additionally, you can download the scraped data in CSV file format as well as also in json.
 
 ## Features
 
