@@ -4,11 +4,10 @@ import requests
 import logging
 import os
 import re
-import csv
 import pandas as pd
-
-# from utils import  create_bokeh_plot 
-# from utils import figure, output_file, show
+import json 
+from utils import  create_bokeh_plot , views_to_numeric , save_to_csv_file, get_from_csv_file , get_json_by_csv
+from utils import figure, output_file, show
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -109,28 +108,6 @@ def download_file():
     return send_file(filename, as_attachment=True)
 
 
-def save_to_csv_file(report_list):
-            file_name = os.path.join(BASE_DIR,  'scrapped_data.csv')
-            with open(file_name, 'w') as csvfile:
-                csvwriter = csv.writer(csvfile)
-                for row in report_list:
-                    try:
-                        csvwriter.writerow(row)
-                    except:                                         # UnicodeEncodeError ,because of these 🔥🔥 in the title row[3]     
-                        row[3] = row[3].encode('utf-8') 
-                        csvwriter.writerow(row)
-                        continue
-
-def get_from_csv_file():
-            report_list = []
-            file_name = 'scrapped_data.csv' 
-            file_name = os.path.join(BASE_DIR,  file_name)
-            with open(file_name, 'r') as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                  report_list.append(row)                  
-            return report_list    
-
 @app.route('/Thumbnail',methods = ['POST' , 'GET'])
 @cross_origin()
 def show_thumbs():
@@ -149,6 +126,7 @@ def show_thumbs():
 @app.route('/Video url',methods = ['POST' , 'GET'])
 @cross_origin()
 def show_videos():
+    
     report_list = get_from_csv_file()[1:]
     video_urls = [] 
     if not bool(report_list):
@@ -157,29 +135,32 @@ def show_videos():
         try: 
             video_urls.append(row[1].split("=")[-1])       
         except:            
-           continue  
-
-    # return jsonify({"urls": video_urls})
+           continue 
     
     return render_template('videos.html', video_urls=video_urls)
                    
                     
 @app.route('/json',methods = ['POST' , 'GET'])
 @cross_origin()
-def JSON():
-    df  = pd.read_csv("scrapped_data.csv")
-    # df.drop(df.columns[0], inplace = True)
-    print(df.columns)
-    print(df.head())
+def json_renderer():
     
-    dic = {}
-    
-    for column in df.columns:
-        dic[column] = list(df[column])        
-    
-    # return jsonify(df.T.to_json())
-    return jsonify(dic)
+        dic = get_json_by_csv()
+        return jsonify(dic)
          
+
+
+@app.route('/JSON',methods = ['POST' , 'GET'])
+@cross_origin()
+def JSON_FILE():
+    
+     file_name = "scrapped_data.json"
+    
+     with open( file_name , "w") as fileobj:
+         json.dump( get_json_by_csv(), fileobj )
+         
+     return send_file( file_name , as_attachment=True)
+
+  
   
   
 # Route to render the Bokeh plot
@@ -196,6 +177,11 @@ if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
     
     #"D:\Softwares\Anaconda\Scripts\activate.bat"
+
+
+
+
+
 
 
 
@@ -226,4 +212,5 @@ print(normal_string)
 # %%
 "https://www.youtube.com/watch?v=b8u0bZpiA4I".split("=")[-1]
 # %%
-"D:\Softwares\Anaconda\Scripts\activate.bat"
+
+# %%

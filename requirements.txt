@@ -3,8 +3,10 @@ flask_cors
 requests
 bs4
 bokeh
-pymongo
+datetime
 re
-shutil
+os
+json
+logging
+pandas
 csv
-urllib
