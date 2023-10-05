@@ -8,6 +8,7 @@ import pandas as pd
 import json 
 from utils import  create_bokeh_plot , views_to_numeric , save_to_csv_file, get_from_csv_file , get_json_by_csv
 from utils import figure, output_file, show
+import datetime
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -105,7 +106,18 @@ def index():
 @cross_origin()
 def download_file():
     filename = 'scrapped_data.csv'
-    return send_file(filename, as_attachment=True)
+
+    csv_file = filename 
+    df = pd.read_csv(csv_file)
+
+    excel_file = 'scrapped_data.xlsx'  
+
+    df["fetch time"]  =  (datetime.datetime.now().isoformat(),)*df.shape[0]
+    df["Numeric Views"] = df["Views"].apply(views_to_numeric) 
+    
+    df.to_excel(excel_file, index=False)  
+    
+    return send_file( excel_file , as_attachment=True)
 
 
 @app.route('/Thumbnail',methods = ['POST' , 'GET'])
@@ -143,7 +155,7 @@ def show_videos():
 @app.route('/json',methods = ['POST' , 'GET'])
 @cross_origin()
 def json_renderer():
-    
+   
         dic = get_json_by_csv()
         return jsonify(dic)
          
@@ -156,14 +168,13 @@ def JSON_FILE():
      file_name = "scrapped_data.json"
     
      with open( file_name , "w") as fileobj:
-         json.dump( get_json_by_csv(), fileobj )
+         json.dump( get_json_by_csv(), fileobj ) 
          
      return send_file( file_name , as_attachment=True)
 
   
   
-  
-# Route to render the Bokeh plot
+
 @app.route('/visualize')
 def visualize():
     df  = pd.read_csv("scrapped_data.csv")

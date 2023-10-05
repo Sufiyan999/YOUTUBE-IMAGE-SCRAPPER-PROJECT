@@ -58,21 +58,28 @@ def get_json_by_csv():
 
 # Convert views to numeric
 def views_to_numeric(views_str):
-    if isinstance(views_str, int) or isinstance(views_str, float):
-        return float(views_str)
-    
-    views_str = views_str.replace(',', '')  # Remove commas if present
-    if 'K' in views_str:
-        views_str = views_str.replace('K', '')
-        return float(views_str) * 1000
-    elif 'M' in views_str:
-        views_str = views_str.replace('M', '')
-        return float(views_str) * 1000000
-    elif 'B' in views_str:
-        views_str = views_str.replace('B', '')
-        return float(views_str) * 1000000000
-    else:
-        return float(views_str)   
+    try:
+        
+        if isinstance(views_str, int) or isinstance(views_str, float):
+            return float(views_str)
+        
+        
+        views_str = views_str.replace(',', '')  # Remove commas if present
+        if 'K' in views_str:
+            views_str = views_str.replace('K', '')
+            return float(views_str) * 1000
+        elif 'M' in views_str:
+            views_str = views_str.replace('M', '')
+            return float(views_str) * 1000000
+        elif 'B' in views_str:
+            views_str = views_str.replace('B', '')
+            return float(views_str) * 1000000000
+        else:
+            return float(views_str)   
+         
+    except  Exception as e:
+        print(f"ERROR: {e}")
+        print( views_str , type(views_str))    
 
 def create_bokeh_plot(df , hover_data = True): 
             data = {}
