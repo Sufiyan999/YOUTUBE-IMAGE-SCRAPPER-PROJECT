@@ -6,7 +6,7 @@ import os
 import re
 import pandas as pd
 import json 
-from utils import  create_bokeh_plot , views_to_numeric , save_to_csv_file, get_from_csv_file , get_json_by_csv
+from utils import  create_bokeh_plot , views_to_numeric , save_to_file, get_from_csv_file , get_json
 from utils import figure, output_file, show
 import datetime
 
@@ -38,6 +38,7 @@ def index():
 
             # fetch the search results page
             response = requests.get(f"https://www.youtube.com/@{query}/videos", headers=headers)
+            fetch_time = datetime.datetime.isoformat(sep="+")
             res = response.text
 
             # Video
@@ -76,14 +77,12 @@ def index():
                         print(e)
                         continue
                     
+            num_rows =    len(report_list) - 1    
             # print(report_list)     
-            save_to_csv_file(report_list)
-            return render_template('result.html', report_list=report_list, channel=query)
-
-        except UnicodeEncodeError as e:
-                save_to_csv_file(report_list)
-                return render_template('result.html', report_list=report_list, channel=query)
+            save_to_file(report_list , time = fetch_time ,query = query)
             
+            return render_template('result.html', report_list=report_list, channel=query , num_rows = num_rows , fetch_time = fetch_time )
+              
         except Exception as e:
             logging.info(e)
             query = request.form['content']
@@ -94,7 +93,14 @@ def index():
         
         report_list = get_from_csv_file()
         print(len(report_list) , len(report_list[0]))
-        return render_template('result.html', report_list=report_list, channel=query)
+        num_rows =    len(report_list)-1 
+        dic = get_json()
+        fetch_time =  dic["Fetch Time"]
+        
+        if not query is None:
+            query  = dic["Query"]
+          
+        return render_template('result.html', report_list=report_list, channel=query , num_rows = num_rows, fetch_time = fetch_time )
     
     else:
         return render_template('index.html')
@@ -156,7 +162,7 @@ def show_videos():
 @cross_origin()
 def json_renderer():
    
-        dic = get_json_by_csv()
+        dic = get_json()
         return jsonify(dic)
          
 
@@ -166,9 +172,6 @@ def json_renderer():
 def JSON_FILE():
     
      file_name = "scrapped_data.json"
-    
-     with open( file_name , "w") as fileobj:
-         json.dump( get_json_by_csv(), fileobj ) 
          
      return send_file( file_name , as_attachment=True)
 

@@ -74,11 +74,24 @@ table {
     display: inline-block;
 }
 
+
+
 @media (max-width: 1100px) { /* Adjust the width as needed */
     .image-link {
         display: none; /* Hide the image on smaller screens */
     }
 }
+
+
+.summary {
+    background-color: #f1f1f1; /* Set the background color for the summary/footer */
+    padding: 10px; /* Add padding for spacing */
+}
+
+.summary-content {
+    display: inline-block;
+}
+
 
 
  </style>
@@ -156,6 +169,14 @@ table {
       {% endfor %}
     </table>
   </div>
+<!-- Summary or Footer -->
+<div class="summary">
+  <div class="summary-content">
+      <p>Fetch Time: {{ fetch_time }}</p>
+      <p>Number of Rows: {{ num_rows }}</p>
+  </div>
+</div>
+
 
 </div>
 <div>   &#xf16a;    

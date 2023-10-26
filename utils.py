@@ -10,7 +10,7 @@ import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def save_to_csv_file(report_list):
+def save_to_file(report_list ,query , time  =  None):
             file_name = os.path.join(BASE_DIR,  'scrapped_data.csv')
             with open(file_name, 'w') as csvfile:
                 csvwriter = csv.writer(csvfile)
@@ -25,6 +25,28 @@ def save_to_csv_file(report_list):
                         csvwriter.writerow(row)
                         continue
                     
+            if not time is None :        
+                    df  = pd.read_csv("scrapped_data.csv")
+                    # df.drop(df.columns[0], inplace = True)
+                    print(df.columns)
+                    df["Numeric Views"] = df["Views"].apply(views_to_numeric)
+                    
+                    print(df.head())
+                    
+                    dic = {} 
+                    
+                    for column in df.columns:
+                        dic[column] = list(df[column])        
+                    
+                    dic["Fetch Time"] =  time
+                    dic["Query"] =  query
+    
+                    with open("scrapped_data.json" , "wb") as fileobj:
+                                json.dump( dic, fileobj )
+            
+                
+                    
+                    
                     
                     
 def get_from_csv_file():
@@ -38,22 +60,15 @@ def get_from_csv_file():
             return report_list
            
            
-def get_json_by_csv():
-            df  = pd.read_csv("scrapped_data.csv")
-            # df.drop(df.columns[0], inplace = True)
-            print(df.columns)
-            df["Numeric Views"] = df["Views"].apply(views_to_numeric)
+def get_json():
+      file_name = os.path.join(BASE_DIR,  "scrapped_data.json")
+      dic = {}
+      
+      with open( file_name  , "rb") as fileobj:
+            dic = json.load(fileobj)
             
-            print(df.head())
-            dic = {} 
-            
-            for column in df.columns:
-                dic[column] = list(df[column])        
-            
-            dic["fetch time"] =  datetime.datetime.now().isoformat()
-        
-            
-            return dic
+      return dic
+
                                 
 
 # Convert views to numeric
