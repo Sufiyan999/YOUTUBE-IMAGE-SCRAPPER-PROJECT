@@ -198,13 +198,14 @@ def zip_images():
             if response.status_code == 200:
                 # filename = os.path.join(download_dir, os.path.basename(url))
                 name = refine_name(name)
-                filename = os.path.join(download_dir, name)
+                filename = os.path.join(download_dir, name+".jpg")
                 with open(filename, 'wb') as file:
                     file.write(response.content)
                 print(f'Downloaded: {filename}')
 
         # Create a zip file containing the downloaded images
-        zip_filename = 'images.zip'
+        zip_filename = os.path.join(BASE_DIR, 'images.zip') 
+        
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(download_dir):
                 for file in files:

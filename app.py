@@ -195,10 +195,13 @@ def visualize():
     return redirect("static/bokeh_plot_with_hover_and_image.html")
     # return render_template('bokeh.html', script=p)   
                     
-                    
+                 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
-    
+    files = [ "scrapped_data.csv" , "scrapped_data.json" , "scrapped_data.xlsx" , "static/bokeh_plot_with_hover_and_image.html" ,"images.zip"]
+    # for file in files:
+    #     os.remove(files)
+        
     
     
     
