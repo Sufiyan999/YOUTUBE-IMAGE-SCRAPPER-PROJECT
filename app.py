@@ -6,7 +6,7 @@ import os
 import re
 import pandas as pd
 import json 
-from utils import  create_bokeh_plot , views_to_numeric , save_to_file, get_from_csv_file , get_json
+from utils import  create_bokeh_plot , views_to_numeric , save_to_file, get_from_csv_file , get_json ,zip_images
 from utils import figure, output_file, show
 import datetime
 
@@ -38,7 +38,7 @@ def index():
 
             # fetch the search results page
             response = requests.get(f"https://www.youtube.com/@{query}/videos", headers=headers)
-            fetch_time = datetime.datetime.isoformat(sep="+")
+            fetch_time = datetime.datetime.now().isoformat(sep="+")
             res = response.text
 
             # Video
@@ -58,8 +58,8 @@ def index():
                 ['S No', 'Video url', 'Thumbnail', 'Title', 'Views', 'Published Time']
             ]
             
-            min_video_count = min(len(videoids) , len( thumbnails) , len(published_time) , len( titles) , len( views))
-            print("min fethed videoes : " , min_video_count)
+            min_video_count = min(len(videoids) , len(thumbnails) , len(published_time) , len(titles) , len(views))
+            print("min fethed videos : " , min_video_count)
             
             for i in range(min_video_count):
                 try:
@@ -77,7 +77,7 @@ def index():
                         print(e)
                         continue
                     
-            num_rows =    len(report_list) - 1    
+            num_rows = min_video_count    
             # print(report_list)     
             save_to_file(report_list , time = fetch_time ,query = query)
             
@@ -92,8 +92,12 @@ def index():
         print('GET')
         
         report_list = get_from_csv_file()
-        print(len(report_list) , len(report_list[0]))
-        num_rows =    len(report_list)-1 
+        print(report_list[-2][0] , len(report_list[0]))
+        try:
+                num_rows =  int(report_list[-1][0])
+        except:
+                 num_rows =  int(report_list[-2][0])        
+                
         dic = get_json()
         fetch_time =  dic["Fetch Time"]
         
@@ -111,15 +115,14 @@ def index():
 @app.route('/download')
 @cross_origin()
 def download_file():
-    filename = 'scrapped_data.csv'
-
-    csv_file = filename 
-    df = pd.read_csv(csv_file)
-
+    csv_file = 'scrapped_data.csv'
     excel_file = 'scrapped_data.xlsx'  
-
-    df["fetch time"]  =  (datetime.datetime.now().isoformat(),)*df.shape[0]
-    df["Numeric Views"] = df["Views"].apply(views_to_numeric) 
+    
+    df = pd.read_csv(csv_file)
+    dic = get_json()
+    
+    df["Fetch Time"]  =  pd.Series(  ( dic["Fetch Time"] , )*df.shape[0]  )
+    df["Numeric Views"] = pd.Series(dic["Numeric Views"]) 
     
     df.to_excel(excel_file, index=False)  
     
@@ -172,9 +175,14 @@ def json_renderer():
 def JSON_FILE():
     
      file_name = "scrapped_data.json"
-         
      return send_file( file_name , as_attachment=True)
 
+
+@app.route('/ZIP',methods = ['POST' , 'GET'])
+@cross_origin()
+def ZIP_FILE():  
+     file_name = zip_images()  
+     return send_file( file_name , as_attachment=True)
   
   
 
