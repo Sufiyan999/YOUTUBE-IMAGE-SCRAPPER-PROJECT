@@ -6,5 +6,6 @@ bokeh
 datetime
 json
 zipfile
+codec
 pandas
 csv
