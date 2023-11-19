@@ -93,13 +93,20 @@ def index():
         
     if request.method == 'GET':
         print('GET')
-        
-        report_list = get_from_csv_file()
-        print(report_list[-2][0] , len(report_list[0]))
         try:
-                num_rows =  int(report_list[-1][0])
+               report_list = get_from_csv_file()
         except:
-                 num_rows =  int(report_list[-2][0])        
+               return render_template("index.html")         
+         
+        if len(report_list) > 2:                         
+                    print(report_list[-2][0] , len(report_list[0]))
+                    try:
+                            num_rows =  int(report_list[-1][0])
+                    except:
+                            num_rows =  int(report_list[-2][0]) 
+                            
+        else : 
+             num_rows = 1                         
                 
         dic = get_json()
         fetch_time =  dic["Fetch Time"]
