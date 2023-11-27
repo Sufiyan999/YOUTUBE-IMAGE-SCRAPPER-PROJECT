@@ -57,7 +57,7 @@
 		</div>
 
 	<div class="container">
-		<img src="{{ url_for('static', filename='css/example.jpg')}}" alt="Image"></img>
+		<!-- <img src="{{ url_for('static', filename='css/example.jpg')}}" alt="Image"></img> -->
 		{% for img_url in img_urls %}
 		<a href='{{img_url}}'><img src="{{img_url}}" alt="{{img_url}}"></img></a>
 		{% endfor %}

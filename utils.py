@@ -61,15 +61,35 @@ def get_from_csv_file():
            
            
 def get_json():
-      file_name = os.path.join(BASE_DIR,  "scrapped_data.json")
-      
-      dic = {}
-      
-      with open( file_name  , "r") as fileobj:
-            dic = json.load(fileobj)
+    try:
+            json_file_name = os.path.join(BASE_DIR,  "scrapped_data.json")
             
-      return dic
+            dic = {}
+            
+            with open( json_file_name  , "r") as fileobj:
+                    dic = json.load(fileobj)
+                    
+            return dic
+    except:
+            file_name = os.path.join(BASE_DIR,  'scrapped_data.csv')
+            df  = pd.read_csv(file_name)
+            # df.drop(df.columns[0], inplace = True)
+            print(df.columns)
+            df["Numeric Views"] = df["Views"].apply(views_to_numeric)
+            
+            print(df.head())
+            
+            dic = {} 
+            
+            for column in df.columns:
+                dic[column] = list(df[column])        
+            
 
+            with open("scrapped_data.json" , "w") as fileobj:
+                        json.dump( dic, fileobj ) 
+            
+                          
+            return dic
 
 def refine_list(lst):
     for row in lst:
@@ -93,6 +113,11 @@ def views_to_numeric(views_str):
             return float(views_str) * 1000
         elif 'M' in views_str:
             views_str = views_str.replace('M', '')
+            return float(views_str) * 1000000
+        elif "million" in views_str:
+            views_str = views_str.replace("million", '')
+            if views_str == "" or views_str == " ":
+                views_str = "1"
             return float(views_str) * 1000000
         elif 'B' in views_str:
             views_str = views_str.replace('B', '')

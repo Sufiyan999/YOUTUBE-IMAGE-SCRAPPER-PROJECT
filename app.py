@@ -34,7 +34,7 @@ def index():
         try:
             # return show_urls()  
             global query     
-            query = request.form['content'].replace(" ","")
+            query = request.form['content'].replace(" ","%20")
              
             # fake user agent to avoid getting blocked by Google
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"}
