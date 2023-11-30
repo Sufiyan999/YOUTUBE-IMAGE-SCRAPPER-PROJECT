@@ -26,7 +26,7 @@ print("Youtube Scrap")
 @cross_origin()
 def homepage():
     return render_template("index.html")
-
+  
 @app.route("/review" , methods = ['POST' , 'GET'])
 @cross_origin()
 def index():
@@ -34,7 +34,12 @@ def index():
         try:
             # return show_urls()  
             global query     
-            query = request.form['content'].replace(" ","%20")
+            query = request.form['content']
+            while query[0] == " " :
+                query = query[1:]
+                
+            query = query.replace(" ","%20") 
+            print("_"+query)
              
             # fake user agent to avoid getting blocked by Google
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"}
@@ -193,7 +198,7 @@ def show_thumbs():
            continue  
     return render_template('imgs.html', img_urls=img_urls)
 
-@app.route('/Video url',methods = ['POST' , 'GET'])
+@app.route('/Video Url',methods = ['POST' , 'GET'])
 @cross_origin()
 def show_videos():
     
